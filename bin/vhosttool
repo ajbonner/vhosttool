@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require 'vhosttool'
+
+domain = ARGV[0]
+user   = ARGV[1]
+bind_user = ARGV[2]
+group  = 'www-data'
+
+tool = VhostTool.new
+
+www_dir  = "/home/#{user}/public_html"
+log_dir  = "/home/#{user}/logs"
+bind_dir = "/home/#{bind_user}/public_html"
+
+sites_enabled = '/etc/apache2/sites-enabled'
+sites_available = '/etc/apache2/sites-available'
+
+tool.create_user(user, group)
+tool.create_dir(www_dir, user, group, '0755')
+tool.create_dir(log_dir, user, group, '0755')
+tool.create_vhost(template, domain, user, sites_available, sites_enabled)
+tool.create_bindfs_mount(www_dir, bind_dir, user, bind_user, group)
+tool.restart_apache
