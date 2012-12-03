@@ -1,2 +1,3 @@
 /test/resources/sites-enabled
 /test/resources/sites-available
+/*.gem
