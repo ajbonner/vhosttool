@@ -21,9 +21,11 @@ bind_dir = "/home/#{bind_user}/public_html"
 sites_enabled = '/etc/apache2/sites-enabled'
 sites_available = '/etc/apache2/sites-available'
 
+template = 'templates/vhost.template'
+
 tool.create_user(user, group)
-tool.create_dir(www_dir, user, group, '0755')
-tool.create_dir(log_dir, user, group, '0755')
+tool.create_dir(www_dir, user, group, 0755)
+tool.create_dir(log_dir, user, group, 0755)
 tool.create_vhost(template, domain, user, sites_available, sites_enabled)
 tool.create_bindfs_mount(www_dir, bind_dir, user, bind_user, group)
 tool.restart_apache
