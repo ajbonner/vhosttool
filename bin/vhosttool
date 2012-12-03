@@ -16,7 +16,7 @@ tool = VhostTool.new
 
 www_dir  = "/home/#{user}/public_html"
 log_dir  = "/home/#{user}/logs"
-bind_dir = "/home/#{bind_user}/public_html"
+bind_dir = "/home/#{bind_user}/www"
 
 sites_enabled = '/etc/apache2/sites-enabled'
 sites_available = '/etc/apache2/sites-available'
