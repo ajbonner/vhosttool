@@ -6,6 +6,7 @@ Gem::Specification.new do |s|
   s.summary     = "Manage apache2 vhosts on debian like systems"
   s.description = "Create, disable, enable delete vhosts and associated web users"
   s.authors     = ["Aaron Bonner"]
+  s.homepage    = 'https://github.com/ajbonner/vhosttool.git'
   s.email       = 'ajbonner@gmail.com'
   s.files       = ["lib/vhosttool.rb", "bin/vhosttool", "templates/vhost.template"]
 end
