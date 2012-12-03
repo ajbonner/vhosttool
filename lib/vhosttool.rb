@@ -27,7 +27,7 @@ class VhostTool
   def create_bindfs_mount(src_mount, dst_mount, src_user, dst_user, group)
     unless Dir.exists?(dst_mount)
       FileUtils.mkdir_p(dst_mount)
-      FileUtils.chown(group, src_user, dst_mount)
+      FileUtils.chown(dst_user, group, dst_mount)
     end
     bindfs_cmd = "bindfs -o perms=0770,mirror-only=#{dst_user}:#{src_user},create-for-user=#{src_user},create-for-group=#{group} #{src_mount} #{dst_mount}"
     %x[echo #{bindfs_cmd} >> /etc/init/mount-bindfs.conf]
