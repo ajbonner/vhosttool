@@ -2,6 +2,11 @@
 
 require 'vhosttool'
 
+if ARGV.length < 3
+  puts "Usage: vhosttool domain user adminuser"
+  exit 1
+end
+
 domain = ARGV[0]
 user   = ARGV[1]
 bind_user = ARGV[2]
