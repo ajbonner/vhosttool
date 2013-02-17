@@ -1,6 +1,6 @@
-require "test/unit"
-require "vhosttool"
-require "fileutils"
+require 'test/unit'
+require 'vhosttool'
+require 'fileutils'
  
 class TestVhostTool < Test::Unit::TestCase
 
@@ -8,7 +8,7 @@ class TestVhostTool < Test::Unit::TestCase
     @sites_available = 'test/resources/sites-available';
     @sites_enabled = 'test/resources/sites-enabled';
 
-    @vhosttool = vhosttool = VhostTool.new
+    @vhosttool = vhosttool = VhostTool::VhostTool.new
   end
 
   def test_processes_template

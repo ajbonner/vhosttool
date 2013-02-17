@@ -2,3 +2,4 @@
 /test/resources/sites-available
 /*.gem
 tags
+*.lock
