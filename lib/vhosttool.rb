@@ -2,9 +2,19 @@ require 'fileutils'
 
 module VhostTool
 
-  VERSION = '0.1.0'
+  class Executor
+
+    def execute(command)
+      %x[#{command}]
+    end
+
+  end
 
   class VhostTool
+  
+    def initialize(executor)
+      @executor = executor
+    end
 
     def create_vhost(template, domain, user, sites_available, sites_enabled)
       increment = next_vhostconf_increment(sites_enabled)
@@ -14,11 +24,11 @@ module VhostTool
     end
 
     def restart(service_name)
-      %x[service #{service_name} reload]
+      @executor.execute("service #{service_name} restart")
     end
 
     def create_user(user, group)
-      %x[useradd -m -g #{group} #{user}]
+      @executor.execute("useradd -m -g #{group} #{user}")
     end
 
     def create_dir(dir, user, group, permissions)
@@ -32,9 +42,9 @@ module VhostTool
         FileUtils.mkdir_p(dst_mount)
         FileUtils.chown(dst_user, group, dst_mount)
       end
+      @executor.execute("echo #{bindfs_cmd} >> /etc/init/mount-bindfs.conf")
       bindfs_cmd = "bindfs -o perms=0770,mirror-only=#{dst_user}:#{src_user},create-for-user=#{src_user},create-for-group=#{group} #{src_mount} #{dst_mount}"
-      %x[echo #{bindfs_cmd} >> /etc/init/mount-bindfs.conf]
-      %x[#{bindfs_cmd}]
+      @executor.execute("#{bindfs_cmd}")
     end
 
     def next_vhostconf_increment(path)
@@ -63,7 +73,6 @@ module VhostTool
       replacement_vars.each { |k,v| contents.gsub!(k,v) }
       return contents
     end
-
 
     protected
 

@@ -1,14 +1,14 @@
-require 'test/unit'
-require 'vhosttool'
-require 'fileutils'
- 
+require 'test_helper'
+
 class TestVhostTool < Test::Unit::TestCase
 
   def setup
-    @sites_available = 'test/resources/sites-available';
-    @sites_enabled = 'test/resources/sites-enabled';
+    @testdirs_dir = 'test/resources/test_dirs'
+    @sites_available = 'test/resources/sites-available'
+    @sites_enabled = 'test/resources/sites-enabled'
 
-    @vhosttool = vhosttool = VhostTool::VhostTool.new
+    @executor = mock("VhostTool::Executor")
+    @vhosttool = VhostTool::VhostTool.new(@executor)
   end
 
   def test_processes_template
@@ -46,9 +46,49 @@ class TestVhostTool < Test::Unit::TestCase
     assert(File.symlink?(@sites_enabled + '/001-example.com'))
   end
 
+  def test_creates_user_dirs
+    create_testdir_for_currentuser('testdir')
+    assert(File.exists?(@testdirs_dir + '/testdir'))
+  end
+
+  def test_restarts_apache2 
+    @executor.expects(:execute).with('service apache2 restart')
+    @vhosttool.restart :apache2
+  end
+
+  def test_adds_user
+    @executor.expects(:execute).with('useradd -m -g bobsgroup bob')
+    @vhosttool.create_user(:bob, :bobsgroup)
+  end
+
+  def test_creates_bindfs_mount
+    @executor.expects(:execute).twice
+    @vhosttool.create_bindfs_mount(@testdirs_dir + '/source',
+                                   @testdirs_dir + '/dest',
+                                   current_user,
+                                   current_user,
+                                   current_group)
+  end
+
   protected
 
+  def create_testdir_for_currentuser(dirname)
+    @vhosttool.create_dir(@testdirs_dir + "/#{dirname}", current_user, current_group, 0755)
+  end
+
+  def current_user
+    Etc.getlogin()
+  end
+
+  def current_group
+    Etc.getgrgid(Etc.getpwnam(current_user()).gid).name
+  end
+
   def cleanup_sites_resources
+    if File.exists?(@testdirs_dir)
+      FileUtils.rm_rf(@testdirs_dir)
+    end
+
     if File.exists?(@sites_available)
       FileUtils.rm_rf(@sites_available);
     end
@@ -57,6 +97,7 @@ class TestVhostTool < Test::Unit::TestCase
       FileUtils.rm_rf(@sites_enabled)
     end
 
+    FileUtils.mkdir_p(@testdirs_dir)
     FileUtils.mkdir_p(@sites_available)
     FileUtils.mkdir_p(@sites_enabled)
   end
