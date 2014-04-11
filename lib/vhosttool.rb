@@ -42,8 +42,8 @@ module VhostTool
         FileUtils.mkdir_p(dst_mount)
         FileUtils.chown(dst_user, group, dst_mount)
       end
-      @executor.execute("echo #{bindfs_cmd} >> /etc/init/mount-bindfs.conf")
       bindfs_cmd = "bindfs -o perms=0770,mirror-only=#{dst_user}:#{src_user},create-for-user=#{src_user},create-for-group=#{group} #{src_mount} #{dst_mount}"
+      @executor.execute("echo #{bindfs_cmd} >> /etc/init/mount-bindfs.conf")
       @executor.execute("#{bindfs_cmd}")
     end
 
